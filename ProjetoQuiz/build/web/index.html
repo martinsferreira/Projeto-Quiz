@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8">
+</head>
+<style type="text/css">
+  body{
+    font-size: 20px;
+    font-family: 'Work Sans', sans-serif;
+    color: #333;
+    font-weight: 300;
+    text-align: center;
+    background-color: #cfedb6;
+  }
+  h1{
+    font-weight: 300;
+    margin: 0px;
+    padding: 10px;
+    font-size: 20px;
+    background-color: #2a4911;
+    color: #fff;
+  }
+  .pergunta{
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+  .escolhas {
+    margin-bottom: 20px;
+    text-align: left;
+    display: inline-block;
+  }
+  .escolhas label{
+    display: block;
+    margin-bottom: 10px;
+  }
+  button{
+    font-family: 'Work Sans', sans-serif;
+      font-size: 16px;
+      background-color: #2a4911;
+      color: #fff;
+      border: 0px;
+      border-radius: 3px;
+      padding: 20px;
+      cursor: pointer;
+      margin-bottom: 20px;
+  }
+  button:hover{
+      background-color: #589b22;
+  }
+  .slide{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .active-slide{
+    opacity: 1;
+    z-index: 2;
+  }
+  .quiz-container{
+    position: relative;
+    height: 200px;
+    margin-top: 40px;
+  }
+</style>
+<body>
+  <h1>Quiz Guerras Mundiais</h1>
+  <div class="quiz-container">
+    <div id="quiz"></div>
+  </div>
+  <br>
+  <button id="previous">Anterior</button>
+  <button id="next">Próxima</button>
+  <br>
+  <div id="results"></div>
+  <br>
+  <form action="Quiz.jsp" method="post">
+      <button id="submit" onclick="listagemRanking()">Enviar Quiz</button>
+        <input type="hidden" id="nomehtml" name="nomehtml">
+        <input type="hidden" id="resultado" name="resultado"> 
+  </form>
+</body>
+<script type="text/javascript">
+  (function() {
+    const totalPerguntas = [
+    {
+      pergunta: "1 - Qual foi o estopim para o início da Primeira Guerra mundial ?",
+      escolhas: {
+        a: "Assassinato de Francisco Ferdinando, príncipe do império austro-húngaro",
+        b: "A descoberta de uma jazida rica em ouro",
+        c: "Assassinato de Francisco Ferdinando, príncipe do império servio",
+        d: "A briga por poder entre Alemanha e Estados Unidos",
+        e: "N.D.A"
+      },
+      resposta: "a"
+    },
+    {
+      pergunta: "2 - A Tríplice Aliança era formada por quais paises?",
+      escolhas: {
+        a: "Japão, Inglaterra e Império Austro-Húngaro",
+        b: "Itália, Império Austro-Húngaro e Estados Unidos ",
+        c: "Itália, Império Austro-Húngaro e Alemanha",
+        d: "França, Rússia e Reino Unido",
+        e: "N.D.A"
+      },
+      resposta: "c"
+    },
+    {
+      pergunta: "3 - A Tríplice Entente era formada por quais paises ?",
+      escolhas: {
+        a: "Itália, Império Austro-Húngaro e Alemanha",
+        b: "França, Rússia e Reino Unido",
+        c: "Russia, Japão e Reino Unido",
+        d: "França, Rússia e Estados Unido",
+        e: "N.D.A"
+      },
+      resposta: "b"
+    },
+    {
+      pergunta: "4 - Os estados unidos se uniu a um grupo durante a Primeira Guerra, qual foi esse Grupo ?",
+      escolhas: {
+        a: "Tríplice Entente",
+        b: "Tríplice Aliança",
+        c: "O.N.U",
+        d: "Paz entre as Nações",
+        e: "N.D.A"
+      },
+      resposta: "a"
+    },
+    {
+      pergunta: "5 - Os paises que perderam tiveram que assinar um documento, qual o nome deste documento?",
+      escolhas: {
+        a: "Tratado de Paz",
+        b: "Tratado de Rendição",
+        c: "Tratado de Notre Dame",
+        d: "Tratado de Versalhes",
+        e: "N.D.A"
+      },
+      resposta: "d"
+    },
+    {
+      pergunta: "6 - Houve um pais da Tríplice Aliança que mudou de lado na segunda Guerra mundial, qual foi esse pais?",
+      escolhas: {
+        a: "Itália",
+        b: "Rússia",
+        c: "Sérvia",
+        d: "Império Austro-Húngaro",
+        e: "N.D.A"
+      },
+      resposta: "a"
+    },
+    {
+      pergunta: "7 - Qual foi o estopim para o início da Segunda guerra mundial ?",
+      escolhas: {
+        a: "Assassinato de Francisco Ferdinando, príncipe do império austro-húngaro",
+        b: "A invasão da Polonia pela Alemanha ",
+        c: "A vingança da Alemanha contra os EUA após a derrota na Primiera Guerra ",
+        d: "A busca desenfreada por petróleo",
+        e: "N.D.A"
+      },
+      resposta: "b"
+    },
+    {
+      pergunta: "8 - Quais nações fazam parte da aliança conhecida como Eixo ?",
+      escolhas: {
+        a: "França, Grã-Bretanha, Estados Unidos  e União Soviética.",
+        b: "Alemanha e União Soviética",
+        c: "França, Inglaterra e Japão",
+        d: "Itália, Japão e Alemanha",
+        e: "N.D.A"
+      },
+      resposta: "d"
+    },
+    {
+      pergunta: "9 - Quais nações fazam parte da aliança conhecida como Aliados ?",
+      escolhas: {
+        a: "França, Grã-Bretanha, Estados Unidos  e União Soviética.",
+        b: "Alemanha e União Soviética",
+        c: "França, Inglaterra e Japão",
+        d: "Itália, Japão e Alemanha",
+        E:  "N.D.A" 
+      },
+      resposta: "a"
+    },
+    {
+      pergunta: "10 - Após 6 anos de guerra e milhares de mortes a Grade Guerra chegou ao fim com a: ",
+      escolhas: {
+        a: "Destruição em massa da Alemanha nazista",
+        b: "Destruição em massa dos Estados Unidos ",
+        c: "Intervenção da O.N.U juntamente com os Estados Unidos",
+        d: "Alemanha nazista se tornando a maior potência da época",
+        e: "N.D.A"
+      },
+      resposta: "e"
+    }              
+  ];
+  function buildQuiz() {
+    const output = [];
+    totalPerguntas.forEach((perguntaAtual, numeroPergunta) => {
+      const escolhas = [];
+      for (letter in perguntaAtual.escolhas) {
+  
+        escolhas.push(
+          `<label>
+             <input type="radio" name="pergunta${numeroPergunta}" value="${letter}">
+              ${letter} :
+              ${perguntaAtual.escolhas[letter]}
+           </label>`
+        );
+      }
+      output.push(
+        `<div class="slide">
+           <div class="pergunta"> ${perguntaAtual.pergunta} </div>
+           <div class="escolhas"> ${escolhas.join("")} </div>
+         </div>`
+      );
+    });
+    quizContainer.innerHTML = output.join("");
+  }
+  function exibeResultados() {
+    const containerRespostas = quizContainer.querySelectorAll(".escolhas");
+    let controleCorretas = 0;
+    totalPerguntas.forEach((perguntaAtual, numeroPergunta) => {
+      const respostasContainer = containerRespostas[numeroPergunta];
+      const selector = `input[name=pergunta${numeroPergunta}]:checked`;
+      const respostaUsuario = (respostasContainer.querySelector(selector) || {}).value;
+      if (respostaUsuario === perguntaAtual.resposta) {
+        controleCorretas++;  
+      } 
+    });
+    resultsContainer.innerHTML = `Resultado: ${controleCorretas} de ${totalPerguntas.length}`;
+    btnAnterior.style.display = "none";
+    btnEnviar.style.display = "none";  
+    document.getElementById("resultado").value = controleCorretas;
+    var nome = prompt("Insira seu nome");
+    if(nome === "" || nome === null){
+	alert("Eh necessario digitar o nome caso queira entrar no ranking");
+	return false;
+    }
+    else{
+        document.getElementById("nomehtml").value = nome;
+    }
+  }
+  function showSlide(n) {
+    slides[currentSlide].classList.remove("active-slide");
+    slides[n].classList.add("active-slide");
+    currentSlide = n;
+    
+    if (currentSlide === 0) {
+      btnAnterior.style.display = "none";
+    } else {
+      btnAnterior.style.display = "inline-block";
+    }
+    
+    if (currentSlide === slides.length - 1) {
+      btnProximo.style.display = "none";
+      btnEnviar.style.display = "inline-block";
+    } else {
+      btnProximo.style.display = "inline-block";
+      btnEnviar.style.display = "none";
+    }
+  }
+  function proxPagina() {
+    showSlide(currentSlide + 1);
+  }
+  function paginaAnterior() {
+    showSlide(currentSlide - 1);
+  }
+  const quizContainer = document.getElementById("quiz");
+  const resultsContainer = document.getElementById("results");
+  const btnEnviar = document.getElementById("submit");
+  buildQuiz();
+  const btnAnterior = document.getElementById("previous");
+  const btnProximo = document.getElementById("next");
+  const slides = document.querySelectorAll(".slide");
+  let currentSlide = 0;
+  showSlide(0);
+  btnEnviar.addEventListener("click", exibeResultados);
+  btnAnterior.addEventListener("click", paginaAnterior);
+  btnProximo.addEventListener("click", proxPagina);
+})();
+</script>
+</body>
+</html>
